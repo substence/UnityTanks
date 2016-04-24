@@ -29,8 +29,9 @@ namespace Complete
             // Go through all the colliders...
             for (int i = 0; i < colliders.Length; i++)
             {
+                Collider collider = colliders[i];
                 // ... and find their rigidbody.
-                Rigidbody targetRigidbody = colliders[i].GetComponent<Rigidbody> ();
+                Rigidbody targetRigidbody = collider.GetComponent<Rigidbody> ();
 
                 // If they don't have a rigidbody, go on to the next collider.
                 if (!targetRigidbody)
@@ -45,23 +46,16 @@ namespace Complete
                 // If there is no TankHealth script attached to the gameobject, go on to the next collider.
                 if (!targetHealth)
                     continue;
-
+                
                 // Calculate the amount of damage the target should take based on it's distance from the shell.
                 float damage = CalculateDamage (targetRigidbody.position);
 
                 // Deal this damage to the tank.
                 targetHealth.TakeDamage (damage);
 
-                GameObject canvas = GameObject.Find("MessageCanvas");
-
-                print(canvas);
-
-                Text myText = canvas.GetComponentInChildren<Text>();
-
-                Text copy = colliders[i].gameObject.AddComponent<Text>();
-                copy.font = myText.font;
-                copy.text = Mathf.FloorToInt(damage).ToString();
-                
+                GameObject damageTextGO = GameObject.Find("DamageText");
+                GameObject damamgeTextGOCopy = Instantiate(damageTextGO);
+                damamgeTextGOCopy.GetComponent<DamageText>().Initialize(damage, collider, targetHealth);
             }
 
             // Unparent the particles from the shell.
